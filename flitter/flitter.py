@@ -30,10 +30,9 @@ class Flitter:
         :rtype: list(dict(author=string, message=string))
         """
 
-        feed = self.message_store.fetch_by(user)
+        feed = self._fetch_messages_by_user(user)
 
-        for followee in self.follow_store.get_followees_for(user):
-            feed = feed + self.message_store.fetch_by(followee)
+        feed += self._fetch_messages_by_followees_of_user(user)
 
         return [dict(author=msg.author, message=msg.text) for msg in feed]
 
@@ -49,3 +48,14 @@ class Flitter:
         """
 
         self.follow_store.add(follower=follower, followee=followee)
+
+    def _fetch_messages_by_user(self, user):
+        return self.message_store.fetch_by(user)
+
+    def _fetch_messages_by_followees_of_user(self, user):
+        messages = []
+
+        for followee in self.follow_store.get_followees_for(user):
+            messages += self._fetch_messages_by_user(followee)
+
+        return messages
