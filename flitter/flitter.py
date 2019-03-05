@@ -1,27 +1,20 @@
-class Flitter:
-    def post(self, author, message):
-        """
-        Post a message
+from flitter.message import Message
 
-        :param author: The user name of the author
-        :type author: string
-        :param message: The message to be posted
-        :type message: string
-        :return: nothing
-        :rtype: void
-        """
-        pass
+
+class Flitter:
+    def __init__(self, message_store):
+        self.message_store = message_store
+
+    def post(self, author, message):
+        self.message_store.save(Message(author=author, text=message))
 
     def get_feed_for(self, user):
-        """
-        Get messages in a users feed.
+        feed = []
 
-        :param user: The user to get messages for
-        :type user: string
-        :return: All the message as a list of dicts containing author and message
-        :rtype: list(dict(author=string, message=string))
-        """
-        pass
+        for message in self.message_store.fetch_by_author(user):
+            feed.append(dict(author=message.author, message=message.text))
+
+        return feed
 
     def follow(self, follower, followee):
         """
